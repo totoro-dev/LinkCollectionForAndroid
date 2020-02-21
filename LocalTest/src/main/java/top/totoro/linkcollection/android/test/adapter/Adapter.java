@@ -3,6 +3,8 @@ package top.totoro.linkcollection.android.test.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -43,11 +45,19 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout ll;
+        LinearLayout right;
         TextView tv;
+        ImageView item_right;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            ll = itemView.findViewById(R.id.ll_layout);
+            right = itemView.findViewById(R.id.right);
             tv = itemView.findViewById(R.id.text);
+            item_right = itemView.findViewById(R.id.item_right);
+            ll.setClickable(true);
         }
     }
+
 }

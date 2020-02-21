@@ -1,11 +1,14 @@
 package top.totoro.linkcollection.android.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -18,10 +21,14 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import entry.CollectionInfo;
+import entry.SearchInfo;
 import search.Search;
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.adapter.ShowPagerAdapter;
 import top.totoro.linkcollection.android.base.BaseActivity;
+import top.totoro.linkcollection.android.dialog.AboutDialog;
+import top.totoro.linkcollection.android.dialog.CollectDialog;
 import top.totoro.linkcollection.android.fragment.MeFragment;
 import top.totoro.linkcollection.android.fragment.PushFragment;
 import top.totoro.linkcollection.android.fragment.ServiceFragment;
@@ -33,24 +40,22 @@ import top.totoro.linkcollection.android.util.Logger;
  */
 public class ShowActivity extends BaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
-    private int currPosition = 0;
-
+    private static String localSearchKey = "";
+    private static String serviceSearchKey = "";
+    private static int currPosition = 0;
     private List<Fragment> fragments = new LinkedList<>();
     private List<TextView> tables = new LinkedList<>();
+    private Toolbar tbToolBar;
     private SearchView svSearch;
     private ViewPager vpContainer;
     private TextView tvMe;
     private TextView tvPush;
     private TextView tvService;
     private FindView find;
-
+    private ShowPagerAdapter showPagerAdapter;
     private MeFragment meFragment;
     private PushFragment pushFragment;
     private ServiceFragment serviceFragment;
-    private ShowPagerAdapter showPagerAdapter;
-
-    private static String localSearchKey = "";
-    private static String serviceSearchKey = "";
 
     @Override
     protected void onStart() {
@@ -86,6 +91,26 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
         super.onResume();
         tables.get(currPosition).setTextColor(getResources().getColor(R.color.colorPrimary));
         vpContainer.setCurrentItem(currPosition, true);
+        setToolBarTitle();
+        Intent intent = getIntent();
+        if (intent == null || intent.getStringExtra("link") == null) return;
+        String link = intent.getStringExtra("link");
+        String title = intent.getStringExtra("title");
+        String l1 = intent.getStringExtra("l1");
+        String l2 = intent.getStringExtra("l2");
+        String l3 = intent.getStringExtra("l3");
+        Logger.d(this, link, title, l1, l2, l3);
+        CollectDialog.newInstance(null, title, link, l1, l2, l3).show(getSupportFragmentManager(), "collect");
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (currPosition == 0 && meFragment.showingLabels) {
+            Logger.d(this, "onBackPressed()");
+            meFragment.showCollect();
+            return;
+        }
+//        super.onBackPressed(); // 无法通过返回键直接退出程序
     }
 
     @Override
@@ -94,7 +119,28 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
         find = new FindView(findViewById(R.id.show_layout));
-        setSupportActionBar(find.View(Toolbar.class, R.id.show_toolbar));
+        tbToolBar = find.View(Toolbar.class, R.id.show_toolbar);
+        setSupportActionBar(tbToolBar);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.show_links:
+                meFragment.showCollect();
+                break;
+            case R.id.show_labels:
+                meFragment.showLabels();
+                break;
+//            case R.id.add_item:
+//                break;
+            case R.id.information:
+                break;
+            case R.id.about:
+                AboutDialog.newInstance().show(getSupportFragmentManager(), "about");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -110,9 +156,26 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
             public boolean onQueryTextSubmit(String s) {
                 Logger.d(ShowActivity.this, "TextSubmit : " + s);
                 if (currPosition == 0) {
-                    meFragment.refreshData(Search.searchInLocal(s));
+                    LinkedList<CollectionInfo> data = Search.searchInLocal(s);
+                    if (data.size() <= 0) {
+                        Toast.makeText(instance, R.string.search_no_data, Toast.LENGTH_LONG).show();
+                    } else {
+                        closeSearchView();
+                        meFragment.refreshCollectData(data);
+                        meFragment.showCollect();
+                    }
                 } else if (currPosition == 2) {
-                    serviceFragment.refreshData(Search.searchInService(s));
+                    new Thread(() -> { // 开启线程搜索数据
+                        LinkedList<SearchInfo> data = Search.searchInService(s);
+                        runOnUiThread(() -> {
+                            if (data.size() <= 0) {
+                                Toast.makeText(instance, R.string.search_no_data, Toast.LENGTH_LONG).show();
+                            } else {
+                                closeSearchView();
+                                serviceFragment.refreshData(data);
+                            }
+                        });
+                    }).start();
                 }
                 return false;
             }
@@ -160,6 +223,17 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
         if (currPosition != position) closeSearchView();
         currPosition = position;
         setSearchViewHint(); // 恢复当前页面搜索框的内容
+        setToolBarTitle();
+    }
+
+    private void setToolBarTitle() {
+        if (currPosition == 0) {
+            tbToolBar.setTitle(R.string.tb_local_title);
+        } else if (currPosition == 1) {
+            tbToolBar.setTitle(R.string.tb_push_title);
+        } else if (currPosition == 2) {
+            tbToolBar.setTitle(R.string.tb_service_title);
+        }
     }
 
     @Override
@@ -179,7 +253,6 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
                 vpContainer.setCurrentItem(2, true);
                 break;
         }
-        Logger.d(this, "current page item : " + currPosition);
     }
 
     // 设置搜索框的显示内容

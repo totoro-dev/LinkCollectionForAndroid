@@ -10,9 +10,34 @@
         app:showAsAction="always" />
 
     <item
-        app:showAsAction="never"
-        android:icon="@mipmap/add_item"
-        android:id="@+id/add_item"
+        android:id="@+id/show_links"
+        android:icon="@mipmap/links"
         android:orderInCategory="100"
-        android:title="@string/add_item" />
+        android:title="@string/show_links"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/show_labels"
+        android:icon="@mipmap/labels"
+        android:orderInCategory="100"
+        android:title="@string/show_labels"
+        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/add_item"-->
+<!--        android:icon="@mipmap/add_item"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:title="@string/add_item"-->
+<!--        app:showAsAction="never" />-->
+    <item
+        android:id="@+id/information"
+        android:icon="@mipmap/information"
+        android:orderInCategory="100"
+        android:title="@string/information"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/about"
+        android:icon="@mipmap/about"
+        android:orderInCategory="100"
+        android:title="@string/about"
+        app:showAsAction="never" />
+
 </menu>

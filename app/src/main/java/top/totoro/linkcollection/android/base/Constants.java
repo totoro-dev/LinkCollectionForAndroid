@@ -11,5 +11,8 @@ public class Constants {
     public static final int CHECK_MAIL_SUCCESS      =   4;
     public static final int CHECK_MAIL_FAILED       =   5;
     public static final int SPIDER_SUCCESS          =   6;
+    public static final int GET_PUSH_SUCCESS        =   7;
+    public static final int SERVICE_SEARCH_SUCCESS  =   8;
+    public static final int COLLECT_SUCCESS         =   9;
 
 }

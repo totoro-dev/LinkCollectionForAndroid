@@ -2,7 +2,7 @@ package top.totoro.linkcollection.android;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -10,6 +10,12 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
+
+    public static void main(String[] args) {
+        String ls = "1 | 2 | 3";
+        System.out.println(ls.split("\\|")[0].trim()+",");
+    }
+
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);

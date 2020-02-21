@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * Create by HLM on 2020-02-16
+ * 用于ViewPager的Fragment适配器
  */
 public class ShowPagerAdapter extends FragmentPagerAdapter {
 

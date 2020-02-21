@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import entry.CollectionInfo;
 import top.totoro.linkcollection.android.base.BaseApplication;
+import top.totoro.linkcollection.android.util.Logger;
 
 /**
  * 处理用户收藏链接的数据库
@@ -29,18 +30,18 @@ public class SQLService extends SQLiteOpenHelper {
 
     private static SQLService instance;
 
-    public static SQLService getInstance() {
+    private SQLService(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
+    }
+
+    public static SQLService getInstance(long userId) {
         synchronized (SQLService.class) {
             if (instance == null) {
-                instance = new SQLService(BaseApplication.getInstance(), TABLE_NAME, null, 1);
+                instance = new SQLService(BaseApplication.getInstance(), TABLE_NAME, null, (int) userId);
                 db = instance.getWritableDatabase();
             }
         }
         return instance;
-    }
-
-    private SQLService(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
     }
 
     @Override
@@ -50,6 +51,8 @@ public class SQLService extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("drop table if exists " + TABLE_NAME);
+        onCreate(db);
     }
 
     private boolean exist(CollectionInfo collectionInfo) {
@@ -60,6 +63,12 @@ public class SQLService extends SQLiteOpenHelper {
             return true;
         }
         return false;
+    }
+
+    public boolean deleteCollection(String linkId) {
+        int delete = db.delete(TABLE_NAME, "linkId=?", new String[]{linkId});
+        Logger.d(this, "delete result = " + delete);
+        return delete == 1;
     }
 
     public void createIndex(CollectionInfo collectionInfo) {

@@ -7,6 +7,7 @@
     <string name="check_mail_title">邮箱验证</string>
     <string name="show_title">链接收藏</string>
     <string name="collect_title">收藏</string>
+    <string name="web_title">浏览器</string>
 
     <string name="nickname_hint">昵称</string>
     <string name="email_hint">邮箱</string>
@@ -39,6 +40,7 @@
     <string name="check_mail_success">验证成功</string>
     <string name="check_mail_failed">验证失败</string>
     <string name="collect_success">收藏成功</string>
+    <string name="delete_success">删除成功</string>
 
     <string name="must_input">必填</string>
     <string name="self_input">选填</string>
@@ -47,23 +49,51 @@
     <string name="search_local">本地搜索</string>
     <string name="search_service">全网搜索</string>
     <string name="search_unable">推荐页无法搜索</string>
+    <string name="search_no_data">关键词无效</string>
 
     <string name="title">标题</string>
     <string name="link">链接</string>
     <string name="label_1">标签1</string>
     <string name="label_2">标签2</string>
     <string name="label_3">标签3</string>
-    <string name="collect">收藏</string>
-    <string name="cancel">取消</string>
+    <string name="delete_dialog_title">删除收藏？</string>
+    <string name="collect_dialog_confirm">收藏</string>
+    <string name="delete_dialog_confirm">删除</string>
+    <string name="dialog_cancel">取消</string>
 
     <string name="bottom_table_1">我的</string>
     <string name="bottom_table_2">推荐</string>
     <string name="bottom_table_3">全网</string>
 
     <string name="divider">分割线</string>
-    <string name="add_item">添加项</string>
+    <string name="add_item">添加收藏</string>
+    <string name="show_links">所有链接</string>
+    <string name="show_labels">所有标签</string>
+    <string name="information">我的信息</string>
+    <string name="about">关于</string>
     <string name="show_collection">显示收藏列表</string>
     <string name="show_type">显示类型</string>
-    <string name="local_collect">本地收藏</string>
+    <string name="tb_local_title">本地收藏</string>
+    <string name="tb_push_title">全网推荐</string>
+    <string name="tb_service_title">全网搜索</string>
+
+    <string name="push_title_recommend">推荐</string>
+    <string name="push_title_art">艺术</string>
+    <string name="push_title_science">科技</string>
+    <string name="push_title_computer">计算机</string>
+    <string name="push_title_healthy">健康</string>
+    <string name="push_title_economics">经济</string>
+    <string name="push_title_life">生活</string>
+    <string name="push_title_game">游戏</string>
+    <string name="push_title_eat">美食</string>
+    <string name="push_title_tour">旅游</string>
+
+    <string name="refresh_success">更新成功</string>
+    <string name="refresh_failed">更新失败</string>
+    <string name="refresh_timeout">更新超时</string>
+
+    <string name="about_app">链接收藏</string>
+    <string name="about_app_version">版本：1.0.0</string>
+    <string name="about_app_function">功能：复制链接即可收藏</string>
 
 </resources>

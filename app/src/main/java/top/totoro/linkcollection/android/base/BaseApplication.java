@@ -17,7 +17,7 @@ import androidx.core.app.NotificationCompat;
 import java.io.File;
 
 import top.totoro.linkcollection.android.R;
-import top.totoro.linkcollection.android.ui.CollectActivity;
+import top.totoro.linkcollection.android.ui.ShowActivity;
 import top.totoro.linkcollection.android.util.Logger;
 
 /**
@@ -87,6 +87,7 @@ public class BaseApplication extends Application {
         builder.setAutoCancel(true);
         builder.setSound(Uri.fromFile(new File("/system/media/audio/ringtones/Suite.ogg")));
         builder.setVibrate(new long[]{0, 1000, 250, 1000});
+        Intent intent = new Intent(this, ShowActivity.class);
         // 处理通知跳转页面时发送的信息
         if (collectCode > 0) {
             Bundle bundle = new Bundle();
@@ -95,10 +96,9 @@ public class BaseApplication extends Application {
             bundle.putString("l1", l1);
             bundle.putString("l2", l2);
             bundle.putString("l3", l3);
-            Intent intent = new Intent(this, CollectActivity.class);
             intent.putExtras(bundle);
-            builder.setContentIntent(PendingIntent.getActivity(this, collectCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
         }
+        builder.setContentIntent(PendingIntent.getActivity(this, collectCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
         Notification notification = builder.build();
         manager.notify(id, notification);
     }

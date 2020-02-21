@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 
+import entry.CollectionInfo;
 import monitor.Background;
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.ui.CheckMailActivity;
@@ -28,52 +29,7 @@ import top.totoro.linkcollection.android.util.Logger;
 public abstract class BaseActivity extends AppCompatActivity {
 
     public static final LinkedList<BaseActivity> contexts = new LinkedList<>();
-
-    public static void pollActivity(Class<?> clazz) {
-        while (contexts.size() > 0) {
-            Object context = contexts.pollLast();
-            if (context == null) continue;
-            Logger.d(BaseActivity.class, "pollActivity() : " + context.getClass().getSimpleName());
-            if (context instanceof BaseActivity) ((BaseActivity) context).finish();
-            // 栈中存在指定的Activity
-            if (context.getClass().getSimpleName().equals(clazz.getSimpleName())) {
-                break;
-            }
-        }
-    }
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        WeakReference reference = new WeakReference(this);
-        contexts.add(this);
-        instance = this;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        contexts.pollLast();
-        instance = contexts.peekLast();
-    }
-
     public static BaseActivity instance;
-
-    public static BaseActivity getInstance() {
-        return instance;
-    }
-
-    /**
-     * 定义从当前Activity跳转Activity的方式
-     *
-     * @param clazz 跳转的Activity
-     */
-    public void startActivity(Class clazz) {
-        Logger.d(this, "from " + getClass().getSimpleName() + " to " + clazz.getSimpleName());
-        startActivity(new Intent(this, clazz));
-    }
-
-
     @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
         @Override
@@ -116,19 +72,66 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.SPIDER_SUCCESS:
-                    String[] info = ((String) msg.obj).split(",");
-                    if (info.length != 5) break; // 防止内容不匹配
-                    String link = info[0];
-                    String title = info[1];
+                    CollectionInfo info = (CollectionInfo) msg.obj;
+                    String link = info.getLink();
+                    String title = info.getTitle();
                     if ("链接已收藏".equals(title)) {
                         BaseApplication.getInstance().notifyMe(title, link, null, null, null, -1);
                         break;
                     }
-                    String l1 = info[2], l2 = info[3], l3 = info[4];
+                    String[] ls = info.getLabels();
+                    String l1 = ls[0] == null || ls[0].equals("null") ? "" : ls[0];
+                    String l2 = ls[1] == null || ls[1].equals("null") ? "" : ls[1];
+                    String l3 = ls[2] == null || ls[2].equals("null") ? "" : ls[2];
                     BaseApplication.getInstance().notifyMe(title, link, l1, l2, l3, (int) System.currentTimeMillis());
+                    break;
+                case Constants.COLLECT_SUCCESS:
+                    Toast.makeText(instance == null ? BaseActivity.this : instance, R.string.collect_success, Toast.LENGTH_LONG).show();
                     break;
             }
         }
     };
+
+    public static void pollActivity(Class<?> clazz) {
+        while (contexts.size() > 0) {
+            Object context = contexts.pollLast();
+            if (context == null) continue;
+            Logger.d(BaseActivity.class, "pollActivity() : " + context.getClass().getSimpleName());
+            if (context instanceof BaseActivity) ((BaseActivity) context).finish();
+            // 栈中存在指定的Activity
+            if (context.getClass().getSimpleName().equals(clazz.getSimpleName())) {
+                break;
+            }
+        }
+    }
+
+    public static BaseActivity getInstance() {
+        return instance;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        instance = this;
+        super.onCreate(savedInstanceState);
+        WeakReference reference = new WeakReference(this);
+        contexts.add(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        contexts.pollLast();
+        instance = contexts.peekLast();
+    }
+
+    /**
+     * 定义从当前Activity跳转Activity的方式
+     *
+     * @param clazz 跳转的Activity
+     */
+    public void startActivity(Class clazz) {
+        Logger.d(this, "from " + getClass().getSimpleName() + " to " + clazz.getSimpleName());
+        startActivity(new Intent(this, clazz));
+    }
 
 }
