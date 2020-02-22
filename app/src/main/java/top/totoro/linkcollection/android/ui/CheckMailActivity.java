@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.base.BaseActivity;
 import top.totoro.linkcollection.android.util.FindView;
+import user.Info;
 import user.Register;
 
 /**
@@ -20,6 +21,9 @@ import user.Register;
  */
 public class CheckMailActivity extends BaseActivity implements View.OnClickListener {
 
+    public static final int REGISTER = 0;
+    public static final int UPDATE_PWD = 1;
+    public static int checkType = -1;
     private EditText etVerificationCode;
     private Button btnCheck;
     private TextView tvToLogin;
@@ -51,10 +55,20 @@ public class CheckMailActivity extends BaseActivity implements View.OnClickListe
                     Toast.makeText(CheckMailActivity.this, R.string.verification_code_is_empty, Toast.LENGTH_LONG).show();
                 } else if (code.length() != 4) {
                     Toast.makeText(CheckMailActivity.this, R.string.verification_code_length_error, Toast.LENGTH_LONG).show();
-                } else {
+                } else if (checkType == REGISTER) {
                     new Thread(() -> {
                         Register.checkMail(code);
                     }).start();
+                } else if (checkType == UPDATE_PWD) {
+                    new Thread(() -> {
+                        Info.checkUpdatePwdEmail(code);
+                    }).start();
+                } else {
+                    try {
+                        throw new RuntimeException("请确定验证邮箱的原因？");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case R.id.from_check_mail_to_login:

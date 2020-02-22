@@ -35,6 +35,9 @@
             android:label="@string/show_title"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".ui.ForgotPwdActivity"
+            android:label="@string/update_pwd_title" />
+        <activity
             android:name=".ui.CheckMailActivity"
             android:label="@string/check_mail_title" />
         <activity

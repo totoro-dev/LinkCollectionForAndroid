@@ -6,6 +6,7 @@
     <string name="login_title">登录</string>
     <string name="check_mail_title">邮箱验证</string>
     <string name="show_title">链接收藏</string>
+    <string name="update_pwd_title">重置密码</string>
     <string name="collect_title">收藏</string>
     <string name="web_title">浏览器</string>
 

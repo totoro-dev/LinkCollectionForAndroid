@@ -36,13 +36,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
+                case Constants.AUTO_LOGIN_FAILED:
+                    startActivity(LoginActivity.class);
+                    break;
                 case Constants.LOGIN_SUCCESS:
                     startActivity(ShowActivity.class);
                     Toast.makeText(instance, R.string.had_login, Toast.LENGTH_LONG).show();
                     Background.startClipboardListener(); // 开始监听剪贴板内容变化
                     break;
                 case Constants.LOGIN_FAILED:
-                    startActivity(LoginActivity.class);
                     if (!(msg.obj instanceof String)) {
                         Toast.makeText(instance, R.string.please_login, Toast.LENGTH_LONG).show();
                     } else {
@@ -50,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.REGISTER_SUCCESS:
+                    CheckMailActivity.checkType = CheckMailActivity.REGISTER;
                     startActivity(CheckMailActivity.class);
                     Toast.makeText(instance, R.string.please_check_mail, Toast.LENGTH_LONG).show();
                     break;
@@ -61,6 +64,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                     break;
                 case Constants.CHECK_MAIL_SUCCESS:
+                    Logger.d("MyCheckMailResult", "start activity");
                     startActivity(LoginActivity.class);
                     Toast.makeText(instance, R.string.check_mail_success, Toast.LENGTH_LONG).show();
                     break;
@@ -87,6 +91,16 @@ public abstract class BaseActivity extends AppCompatActivity {
                     break;
                 case Constants.COLLECT_SUCCESS:
                     Toast.makeText(instance == null ? BaseActivity.this : instance, R.string.collect_success, Toast.LENGTH_LONG).show();
+                    break;
+                case Constants.UPDATE_PWD_SEND_CODE:
+                    String result = String.valueOf(msg.obj);
+                    if (result.equals("验证码已发送")) {
+                        CheckMailActivity.checkType = CheckMailActivity.UPDATE_PWD;
+                        startActivity(CheckMailActivity.class);
+                        Toast.makeText(instance, R.string.please_check_mail, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(instance, result, Toast.LENGTH_LONG).show();
+                    }
                     break;
             }
         }

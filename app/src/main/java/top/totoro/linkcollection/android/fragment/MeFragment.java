@@ -110,7 +110,7 @@ public class MeFragment extends Fragment {
             new Thread(() -> {
                 if (Login.getUserId() != null && !"".equals(Login.getUserId())) {
                     future = Executors.newScheduledThreadPool(1).schedule(timeoutTask, 10000, TimeUnit.MILLISECONDS);
-                    if (Info.getCollectionInfo()) {
+                    if (Info.refreshCollectionInfo(Login.getUserId()) && Info.getCollectionInfo()) {
                         handler.sendEmptyMessage(REFRESH_SUCCESS);
                     } else {
                         handler.sendEmptyMessage(REFRESH_FAILED);

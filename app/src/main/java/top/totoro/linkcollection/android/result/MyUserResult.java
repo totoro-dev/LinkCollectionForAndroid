@@ -1,30 +1,15 @@
 package top.totoro.linkcollection.android.result;
 
+import android.os.Message;
+
 import linkcollection.common.interfaces.UserResult;
+import top.totoro.linkcollection.android.base.BaseActivity;
+import top.totoro.linkcollection.android.base.Constants;
+import top.totoro.linkcollection.android.util.Logger;
 
 public class MyUserResult implements UserResult {
     @Override
     public void loginResult(String s) {
-//        String userId = s;
-//        if (userId == null) AppCommon.getLoginResult().loginError("网络错误");
-//        switch (userId) {
-//            case "用户不存在":
-//            case "密码错误":
-//                AppCommon.getLoginResult().loginError(userId);
-//                break;
-//            default:
-//                TFile.builder().toDisk(Disk.TMP).toPath(Constans.INFO_PATH).toName(Constans.LOGIN_INFO_FILE_NAME).toFile();
-//                if (!TFile.getProperty().exists()) TFile.builder().create();
-//                TWriter writer = new TWriter(TFile.getProperty());
-//                String[] info = UserInfoTool.get(Login.getName());
-//                String loginInfo = "{\"headId\":\"" + info[0] + "\",\"tailId\":\"" + info[1] + "\",\"name\":\"" + Login.getName() + "\"}";
-//                writer.write(loginInfo);
-//                TFile.builder().recycle();
-//                // 处理用户链接收集信息
-//                Info.refreshCollectionInfo(userId);
-//                AppCommon.getLoginResult().loginSuccess(userId);
-//                break;
-//        }
     }
 
     @Override
@@ -34,7 +19,15 @@ public class MyUserResult implements UserResult {
 
     @Override
     public void checkEmailResult(String s) {
-
+        Logger.d(this, "check mail result : " + s);
+        Message msg = new Message();
+        if ("验证成功".equals(s)) {
+            msg.what = Constants.CHECK_MAIL_SUCCESS;
+        } else {
+            msg.what = Constants.CHECK_MAIL_FAILED;
+        }
+        msg.obj = s;
+        BaseActivity.getInstance().handler.sendMessage(msg);
     }
 
     @Override
@@ -59,7 +52,10 @@ public class MyUserResult implements UserResult {
 
     @Override
     public void updatePwd(String s) {
-
+        Message msg = new Message();
+        msg.what = Constants.UPDATE_PWD_SEND_CODE;
+        msg.obj = s;
+        BaseActivity.getInstance().handler.sendMessage(msg);
     }
 
     @Override

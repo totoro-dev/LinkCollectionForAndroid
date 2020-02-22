@@ -69,7 +69,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
                 break;
             case R.id.forgot_pwd:
-                // TODO：忘记密码的功能界面
+                startActivity(ForgotPwdActivity.class);
                 break;
         }
     }
