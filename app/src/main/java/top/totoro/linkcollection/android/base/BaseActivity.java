@@ -24,11 +24,13 @@ import top.totoro.linkcollection.android.util.Logger;
 
 /**
  * Create by HLM on 2020-02-14
+ * 处理start Activity的各项工作
+ * 接收各种观察者模式下的接口返回，通过handler机制
  */
 @SuppressWarnings("ALL")
 public abstract class BaseActivity extends AppCompatActivity {
 
-    public static final LinkedList<BaseActivity> contexts = new LinkedList<>();
+    private static final LinkedList<BaseActivity> contexts = new LinkedList<>();
     public static BaseActivity instance;
     @SuppressLint("HandlerLeak")
     public Handler handler = new Handler() {
@@ -87,7 +89,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     String l1 = ls[0] == null || ls[0].equals("null") ? "" : ls[0];
                     String l2 = ls[1] == null || ls[1].equals("null") ? "" : ls[1];
                     String l3 = ls[2] == null || ls[2].equals("null") ? "" : ls[2];
-                    BaseApplication.getInstance().notifyMe(title, link, l1, l2, l3, (int) System.currentTimeMillis());
+                    Logger.d(instance,"current system time = "+System.currentTimeMillis());
+                    BaseApplication.getInstance().notifyMe(title, link, l1, l2, l3, System.currentTimeMillis());
                     break;
                 case Constants.COLLECT_SUCCESS:
                     Toast.makeText(instance == null ? BaseActivity.this : instance, R.string.collect_success, Toast.LENGTH_LONG).show();
@@ -144,8 +147,8 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param clazz 跳转的Activity
      */
     public void startActivity(Class clazz) {
-        Logger.d(this, "from " + getClass().getSimpleName() + " to " + clazz.getSimpleName());
-        startActivity(new Intent(this, clazz));
+        Logger.d(this, "from " + instance.getClass().getSimpleName() + " to " + clazz.getSimpleName());
+        instance.startActivity(new Intent(instance, clazz));
     }
 
 }

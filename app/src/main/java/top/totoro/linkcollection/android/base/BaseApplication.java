@@ -65,7 +65,7 @@ public class BaseApplication extends Application {
      * @param l3          热门标签3
      * @param collectCode 收藏标志/通知标志：-1表示已收藏
      */
-    public void notifyMe(String title, String link, String l1, String l2, String l3, int collectCode) {
+    public void notifyMe(String title, String link, String l1, String l2, String l3, long collectCode) {
         int id = (int) System.currentTimeMillis();
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (manager == null) {
@@ -80,7 +80,7 @@ public class BaseApplication extends Application {
             manager.createNotificationChannel(channel);
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, id + "");
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.mipmap.app);
         builder.setContentTitle(title);
         builder.setContentText(link);
         builder.setTicker("有新通知");
@@ -88,6 +88,7 @@ public class BaseApplication extends Application {
         builder.setSound(Uri.fromFile(new File("/system/media/audio/ringtones/Suite.ogg")));
         builder.setVibrate(new long[]{0, 1000, 250, 1000});
         Intent intent = new Intent(this, ShowActivity.class);
+        Logger.d(this, "notify code = " + collectCode);
         // 处理通知跳转页面时发送的信息
         if (collectCode > 0) {
             Bundle bundle = new Bundle();
@@ -98,7 +99,7 @@ public class BaseApplication extends Application {
             bundle.putString("l3", l3);
             intent.putExtras(bundle);
         }
-        builder.setContentIntent(PendingIntent.getActivity(this, collectCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+        builder.setContentIntent(PendingIntent.getActivity(this, (int)collectCode, intent, PendingIntent.FLAG_UPDATE_CURRENT));
         Notification notification = builder.build();
         manager.notify(id, notification);
     }

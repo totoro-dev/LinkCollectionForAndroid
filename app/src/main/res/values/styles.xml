@@ -7,12 +7,24 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorBottomTableBackground</item>
     </style>
+
+    <!-- Base application theme. -->
+    <style name="AppLoadingTheme" parent="AppTheme.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorBottomTableBackground</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:textColorSecondary">#ffffff</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
     <!--标题与NavigationIcon的距离-->
     <style name="Toolbar.MyStyle" parent="Base.Widget.AppCompat.Toolbar">

@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import entry.SearchInfo;
 import top.totoro.linkcollection.android.R;
@@ -32,7 +34,12 @@ import user.Info;
 public class PushFragment extends Fragment implements View.OnClickListener {
 
     private static final ServiceSearchAdapter adapter = new ServiceSearchAdapter();
-    private List<SearchInfo> data = new LinkedList<>();
+    private static final int ON_RESUME = -9;
+    private static final int CHECK_LOVE_INFO = -10;
+    private Map<String, LinkedList<SearchInfo>> dataMap = new ConcurrentHashMap<>(10);
+    private LinkedList<SearchInfo> data = new LinkedList<>();
+    private List<TextView> titles = new LinkedList<>();
+    private int currentTitle = 0;
     @SuppressLint("HandlerLeak")
     private Handler handler = new Handler() {
         @Override
@@ -42,11 +49,15 @@ public class PushFragment extends Fragment implements View.OnClickListener {
                 case Constants.GET_PUSH_SUCCESS:
                     refreshData(data);
                     break;
+                case CHECK_LOVE_INFO:
+                    checkLoveInfo();
+                    break;
+                case ON_RESUME:
+                    initTitleOnResume();
+                    break;
             }
         }
     };
-    private List<TextView> titles = new LinkedList<>();
-    private int currentTitle = -1;
     private RecyclerView rvCollection;
     private FindView find;
 
@@ -56,10 +67,13 @@ public class PushFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
+        Logger.d(this, "onStart()");
         initView();
         initListener();
+        initTitleOnResume();
+        rvCollection.setAdapter(adapter);
     }
 
     private void initView() {
@@ -77,14 +91,6 @@ public class PushFragment extends Fragment implements View.OnClickListener {
         rvCollection = find.View(RecyclerView.class, R.id.show_push_list);
         RecyclerView.LayoutManager manager = new LinearLayoutManager(this.getContext(), RecyclerView.VERTICAL, false);
         rvCollection.setLayoutManager(manager);
-        rvCollection.setAdapter(adapter);
-        if (currentTitle == -1) {
-            currentTitle = 0;
-            refreshTitle(Info.getLoveInfo());
-        } else {
-            titles.get(currentTitle).setTextColor(getResources().getColor(R.color.colorPrimary));
-            titles.get(currentTitle).setTextSize(20);
-        }
     }
 
     private void initListener() {
@@ -93,11 +99,45 @@ public class PushFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * 进入页面时，初始化标题栏的选中条目
+     */
+    private void initTitleOnResume() {
+        if (isAdded()) {
+            titles.get(currentTitle).setTextColor(getResources().getColor(R.color.colorPrimary));
+            titles.get(currentTitle).setTextSize(20);
+        } else {
+            handler.sendEmptyMessageDelayed(ON_RESUME, 100);
+        }
+    }
+
+    /**
+     * 要显示推荐内容时，检测是否已有选择的关注领域
+     * 没有的话会提示进入关注页进行选择关注
+     */
+    public void checkLoveInfo() {
+        if (isAdded()) {
+            String info = Info.getLoveInfo();
+            Logger.d(this, "checkLoveInfo() position = 0 , love info = " + (info == null ? "null" : info));
+            if (info == null || info.length() == 0) {
+                adapter.notifyNoChooseLoves();
+                titles.get(currentTitle).setTextColor(getResources().getColor(R.color.colorPrimary));
+                titles.get(currentTitle).setTextSize(20);
+            } else {
+                refreshTitle(info);
+            }
+        } else {
+            handler.sendEmptyMessageDelayed(CHECK_LOVE_INFO, 100);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.pager_push, container, false);
+        Logger.d(this, "onCreateView()");
+        View view = inflater.inflate(R.layout.fragment_pager_push, container, false);
         find = new FindView(view);
+        if (container == null) return view;
         adapter.setContext(container.getContext());
         return view;
     }
@@ -109,7 +149,7 @@ public class PushFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.recommend:
                 currentTitle = 0;
-                refreshTitle(Info.getLoveInfo());
+                checkLoveInfo();
                 break;
             case R.id.art:
                 currentTitle = 1;
@@ -154,7 +194,10 @@ public class PushFragment extends Fragment implements View.OnClickListener {
         titles.get(currentTitle).setTextColor(getResources().getColor(R.color.colorPrimary));
         titles.get(currentTitle).setTextSize(20);
         new Thread(() -> { // 开启线程获取数据
-            data = Info.getPushContent(type);
+            if ((data = dataMap.get(type)) == null) {
+                data = Info.getPushContent(type);
+                dataMap.put(type, data);
+            }
             handler.sendEmptyMessage(Constants.GET_PUSH_SUCCESS);
         }).start();
     }

@@ -27,6 +27,7 @@ import user.Info;
 
 /**
  * Create by HLM on 2020-02-19
+ * 按标签显示的列表适配器
  */
 public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> {
 

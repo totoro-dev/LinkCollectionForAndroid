@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#00aaee</color>
     <color name="colorPrimaryDark">#11aaee</color>
+    <color name="colorDefaultText">#888888</color>
     <color name="colorBottomTableBackground">#EBEBEB</color>
     <color name="colorBottomTableTextColor">#888888</color>
     <color name="colorPushTitleTextColor">#888888</color>

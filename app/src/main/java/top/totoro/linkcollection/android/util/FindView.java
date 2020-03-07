@@ -6,6 +6,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -47,6 +48,13 @@ public class FindView {
         if (view instanceof TextView) return (TextView) view;
         else
             throw new RuntimeException("findTextView(int id): 资源ID为" + id + "的视图无法转换成TextView");
+    }
+
+    public RadioButton RadioButton(int id) {
+        View view = findView(id);
+        if (view instanceof RadioButton) return (RadioButton) view;
+        else
+            throw new RuntimeException("findRadioButton(int id): 资源ID为" + id + "的视图无法转换成RadioButton");
     }
 
     public EditText EditText(int id) {

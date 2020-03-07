@@ -184,7 +184,7 @@ public class MeFragment extends Fragment {
         Logger.d(this, "onCreateView()");
         collectAdapter.setContext(container.getContext());
         labelAdapter.setContext(container.getContext());
-        View view = inflater.inflate(R.layout.pager_me, container, false);
+        View view = inflater.inflate(R.layout.fragment_pager_me, container, false);
         find = new FindView(view);
         return view;
     }

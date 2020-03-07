@@ -18,8 +18,11 @@ import top.totoro.linkcollection.android.base.BaseActivity;
  */
 public class AboutDialog extends DialogFragment {
 
-    public static AboutDialog newInstance() {
-        return new AboutDialog();
+    private static AboutDialog instance;
+
+    public static AboutDialog getInstance() {
+        if (instance == null) instance = new AboutDialog();
+        return instance;
     }
 
     @Override
@@ -31,11 +34,6 @@ public class AboutDialog extends DialogFragment {
             getDialog().getWindow().setAttributes(params);
         }
         super.onResume();
-    }
-
-    public int show() {
-        super.show(BaseActivity.getInstance().getSupportFragmentManager(), "about");
-        return 1;
     }
 
     @Nullable

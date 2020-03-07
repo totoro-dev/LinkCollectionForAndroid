@@ -8,58 +8,71 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/show_toolbar"
-        android:layout_width="match_parent"
         style="@style/Toolbar.MyStyle"
+        android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/colorPrimary"
-        app:titleTextAppearance="@style/Toolbar.TitleText"
         app:title="@string/tb_local_title"
+        app:titleTextAppearance="@style/Toolbar.TitleText"
         app:titleTextColor="@android:color/white" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/show_container"
+    <FrameLayout
+        android:id="@+id/show_choose_love_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/ll_bottom_table"
-        android:layout_below="@+id/show_toolbar" />
+        android:layout_below="@+id/show_toolbar"
+        android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/ll_bottom_table"
+    <RelativeLayout
+        android:id="@+id/show_main_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/colorBottomTableBackground"
-        android:gravity="bottom"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/show_toolbar">
 
-        <TextView
-            android:id="@+id/table_me"
-            android:layout_width="wrap_content"
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/show_container"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/bottom_table_1"
-            android:textColor="@color/colorBottomTableTextColor"
-            android:textSize="18sp" />
+            android:layout_above="@+id/ll_bottom_table" />
 
-        <TextView
-            android:id="@+id/table_push"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/bottom_table_2"
-            android:textColor="@color/colorBottomTableTextColor"
-            android:textSize="18sp" />
+        <LinearLayout
+            android:id="@+id/ll_bottom_table"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorBottomTableBackground"
+            android:gravity="bottom"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/table_service"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/bottom_table_3"
-            android:textColor="@color/colorBottomTableTextColor"
-            android:textSize="18sp" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/table_me"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/bottom_table_1"
+                android:textColor="@color/colorBottomTableTextColor"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/table_push"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/bottom_table_2"
+                android:textColor="@color/colorBottomTableTextColor"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/table_service"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/bottom_table_3"
+                android:textColor="@color/colorBottomTableTextColor"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
