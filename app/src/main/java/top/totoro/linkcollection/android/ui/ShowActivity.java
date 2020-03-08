@@ -34,6 +34,7 @@ import top.totoro.linkcollection.android.adapter.ShowPagerAdapter;
 import top.totoro.linkcollection.android.base.BaseActivity;
 import top.totoro.linkcollection.android.dialog.AboutDialog;
 import top.totoro.linkcollection.android.dialog.CollectDialog;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.dialog.MyInformationDialog;
 import top.totoro.linkcollection.android.fragment.ChooseLovesFragment;
 import top.totoro.linkcollection.android.fragment.MeFragment;
@@ -44,28 +45,29 @@ import top.totoro.linkcollection.android.util.Logger;
 
 /**
  * Create by HLM on 2020-02-14
+ * 链接收藏的主要显示页面
  */
 public class ShowActivity extends BaseActivity implements ViewPager.OnPageChangeListener, View.OnClickListener {
 
-    private static String localSearchKey = "";
-    private static String serviceSearchKey = "";
-    private static int currPosition = 0;
+    private static String localSearchKey = ""; // 本地搜索的关键词，用于恢复搜索框的内容
+    private static String serviceSearchKey = ""; // 全网搜索的关键词，用于恢复搜索框的内容
+    private static int currPosition = 0; // 当前ViewPager显示的是哪个fragment
     private List<Fragment> fragments = new LinkedList<>();
-    private List<TextView> tables = new LinkedList<>();
-    private Toolbar tbToolBar;
-    private SearchView svSearch;
+    private List<TextView> tables = new LinkedList<>(); // 底部栏标题，其实也可以用数组
+    private Toolbar tbToolBar; // 顶部栏
+    private SearchView svSearch; // 搜索框
     private ViewPager vpContainer;
     private TextView tvMe;
     private TextView tvPush;
     private TextView tvService;
+    private RelativeLayout rvShowMainLayout;
+    private FrameLayout flShowChooseLoveLayout;
     private FindView find;
     private ShowPagerAdapter showPagerAdapter;
     private MeFragment meFragment;
     private PushFragment pushFragment;
     private ServiceFragment serviceFragment;
     private ChooseLovesFragment chooseLovesFragment = new ChooseLovesFragment();
-    private RelativeLayout rvShowMainLayout;
-    private FrameLayout flShowChooseLoveLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,9 +91,9 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
         flShowChooseLoveLayout = find.View(FrameLayout.class, R.id.show_choose_love_layout);
         fragments.clear();
         tables.clear();
-        meFragment = new MeFragment();
-        pushFragment = new PushFragment();
-        serviceFragment = new ServiceFragment();
+        meFragment = MeFragment.getInstance();
+        pushFragment = PushFragment.getInstance();
+        serviceFragment = ServiceFragment.getInstance();
         showPagerAdapter = new ShowPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.POSITION_UNCHANGED, fragments);
         fragments.add(meFragment);
         fragments.add(pushFragment);
@@ -99,22 +101,23 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
         tables.add(tvMe);
         tables.add(tvPush);
         tables.add(tvService);
+        vpContainer.setAdapter(showPagerAdapter);
         tvMe.setOnClickListener(this);
         tvPush.setOnClickListener(this);
         tvService.setOnClickListener(this);
-        vpContainer.setAdapter(showPagerAdapter);
         vpContainer.addOnPageChangeListener(this);
-        vpContainer.setOffscreenPageLimit(3); // 设置ViewPager切换时，不刷新页面内容
+        vpContainer.setOffscreenPageLimit(tables.size()); // 设置ViewPager切换时，不刷新页面内容
     }
 
     @Override
     protected void onResume() {
         Logger.d(this, "onResume()");
         super.onResume();
-        Logger.d(this, currPosition + " isAdded");
+        Logger.d(this, "fragment " + currPosition + " isAdded");
         tables.get(currPosition).setTextColor(getResources().getColor(R.color.colorPrimary));
         resetToolBarTitle();
         vpContainer.setCurrentItem(currPosition, true);
+        /***** 接收自收藏通知的页面显示 *****/
         Intent intent = getIntent();
         if (intent == null || intent.getStringExtra("link") == null) return;
         String link = intent.getStringExtra("link");
@@ -220,6 +223,7 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
                     }
                 } else if (currPosition == 2) {
                     new Thread(() -> { // 开启线程搜索数据
+                        LoadingDialog.getInstance().show(getSupportFragmentManager());
                         LinkedList<SearchInfo> data = Search.searchInService(s);
                         runOnUiThread(() -> {
                             if (data.size() <= 0) {
@@ -229,6 +233,7 @@ public class ShowActivity extends BaseActivity implements ViewPager.OnPageChange
                                 serviceFragment.refreshData(data);
                             }
                         });
+                        LoadingDialog.getInstance().dismiss();
                     }).start();
                 }
                 return false;

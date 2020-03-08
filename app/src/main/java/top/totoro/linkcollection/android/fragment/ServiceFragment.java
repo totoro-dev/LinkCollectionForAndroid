@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import entry.SearchInfo;
@@ -28,12 +29,10 @@ public class ServiceFragment extends Fragment {
     public final ServiceSearchAdapter adapter = new ServiceSearchAdapter();
     private RecyclerView rvCollection;
     private FindView find;
-
-    public ServiceFragment() {
-        instance = this;
-    }
+    private List<SearchInfo> data = new LinkedList<>();
 
     public static ServiceFragment getInstance() {
+        if (instance == null) instance = new ServiceFragment();
         return instance;
     }
 
@@ -61,6 +60,11 @@ public class ServiceFragment extends Fragment {
     }
 
     public void refreshData(List<SearchInfo> data) {
+        Logger.d(this, "refreshCollectData() : " + data.size());
+        this.data = data;
+        adapter.notifyDataSetChanged(data);
+    }
+    public void refreshData() {
         Logger.d(this, "refreshCollectData() : " + data.size());
         adapter.notifyDataSetChanged(data);
     }

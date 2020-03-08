@@ -101,6 +101,7 @@
     <string name="information_collect_count">已收藏：</string>
     <string name="information_loves">已关注：</string>
 
-    <string name="no_choose_loves">未关注任何领域，点击选择关注</string>
+    <string name="never_collect">未收藏任何链接\n\n复制链接到剪贴板即可收藏</string>
+    <string name="never_choose_loves">未关注任何领域\n\n点击选择关注</string>
 
 </resources>

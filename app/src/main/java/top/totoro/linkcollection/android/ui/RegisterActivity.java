@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.base.BaseActivity;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.util.FindView;
 import user.Register;
 
@@ -70,6 +71,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                 } else if (!pwd.equals(rePwd)) {
                     Toast.makeText(this, R.string.pwd_not_same, Toast.LENGTH_SHORT).show();
                 } else {
+                    LoadingDialog.getInstance().show(getSupportFragmentManager()); // 开启加载框
                     new Thread(() -> {
                         Register.register(name, email, pwd);
                     }).start();

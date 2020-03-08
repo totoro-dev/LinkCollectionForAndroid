@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.base.BaseActivity;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.result.MyCheckMailResult;
 import top.totoro.linkcollection.android.result.MyLinkResult;
 import top.totoro.linkcollection.android.result.MyLocalSearch;
@@ -30,6 +31,7 @@ public class MainActivity extends BaseActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (msg.what == AUTO_LOGIN) {
+                LoadingDialog.getInstance().show(getSupportFragmentManager()); // 开启加载框
                 Login.autoLogin();
                 Log.d(MainActivity.class.getSimpleName(), "handleMessage: auto login");
             }

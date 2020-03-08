@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.base.BaseActivity;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.util.FindView;
 import user.Login;
 
@@ -60,6 +61,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 } else if (pwd.length() < 6) {
                     Toast.makeText(this, R.string.pwd_short_length, Toast.LENGTH_SHORT).show();
                 } else {
+                    LoadingDialog.getInstance().show(getSupportFragmentManager()); // 开启加载框
                     new Thread(() -> {
                         Login.firstLogin(name, pwd);
                     }).start();

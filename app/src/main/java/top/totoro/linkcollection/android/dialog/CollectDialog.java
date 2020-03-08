@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.adapter.BaseViewHolder;
-import top.totoro.linkcollection.android.adapter.CollectionAdapter;
-import top.totoro.linkcollection.android.adapter.LabelAdapter;
+import top.totoro.linkcollection.android.adapter.ServiceSearchAdapter;
 import top.totoro.linkcollection.android.fragment.MeFragment;
+import top.totoro.linkcollection.android.fragment.PushFragment;
 import top.totoro.linkcollection.android.fragment.ServiceFragment;
 import top.totoro.linkcollection.android.util.FindView;
 import top.totoro.linkcollection.android.util.Logger;
@@ -30,6 +30,7 @@ import user.Info;
 
 /**
  * Create by HLM on 2020-02-18
+ * 进行链接收藏的编辑对话框
  */
 public class CollectDialog extends DialogFragment implements View.OnClickListener {
 
@@ -53,20 +54,16 @@ public class CollectDialog extends DialogFragment implements View.OnClickListene
                 Toast.makeText(context, R.string.collect_success, Toast.LENGTH_LONG).show();
                 MeFragment.getInstance().refreshCollectData(Info.getCollectionInfos());
             } else {
-                if (holder.getClass().isAssignableFrom(BaseViewHolder.class)) {
-                    ((BaseViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collect40x40);
-                    ((BaseViewHolder) holder).collected = false;
-                } else if (holder.getClass().isAssignableFrom(LabelAdapter.MainViewHolder.class)) {
-                    ((LabelAdapter.MainViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collect40x40);
-                    ((LabelAdapter.MainViewHolder) holder).collected = false;
+                if (holder instanceof ServiceSearchAdapter.ViewHolder) {
+                    ((BaseViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collected40x40);
+                    ((BaseViewHolder) holder).collected = true;
                 }
                 Toast.makeText(context, R.string.collect_success, Toast.LENGTH_LONG).show();
-                if (!holder.getClass().isAssignableFrom(CollectionAdapter.class)) {
-                    MeFragment.getInstance().refreshCollectData(Info.getCollectionInfos());
-                } else {
-                    MeFragment.getInstance().collectAdapter.notifyDataSetChanged();
-                    MeFragment.getInstance().refreshLabelData();
-                }
+                Info.getCollectionInfo();
+                MeFragment.getInstance().refreshCollectData(Info.getCollectionInfos());
+                MeFragment.getInstance().refreshLabelData();
+//                PushFragment.getInstance().refreshData();
+//                ServiceFragment.getInstance().refreshData();
             }
             ServiceFragment.getInstance().adapter.notifyDataSetChanged();
         }
@@ -74,6 +71,7 @@ public class CollectDialog extends DialogFragment implements View.OnClickListene
 
     public static CollectDialog newInstance(RecyclerView.ViewHolder holder, String title, String link, String l1, String l2, String l3) {
         CollectDialog fragment = new CollectDialog();
+        // 接收链接的基本信息，当界面初始化的时候就可以提取
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putString("link", link);
@@ -90,7 +88,7 @@ public class CollectDialog extends DialogFragment implements View.OnClickListene
         // 设置宽度
         if (getDialog() != null && getDialog().getWindow() != null) {
             WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-            params.width = WindowManager.LayoutParams.MATCH_PARENT;
+            params.width = WindowManager.LayoutParams.MATCH_PARENT; // 对话框宽度要设置屏幕的宽度，但是dialog本身与机身边框有一定间距
             getDialog().getWindow().setAttributes(params);
         }
         super.onResume();
@@ -108,6 +106,7 @@ public class CollectDialog extends DialogFragment implements View.OnClickListene
         etLabel3 = find.EditText(R.id.collect_info_label_3);
         tvCollect = find.TextView(R.id.tv_collect_confirm);
         tvCancel = find.TextView(R.id.tv_collect_cancel);
+        // 从这个dialog提取要收藏的链接信息
         if (getArguments() != null) {
             tvTitle.setText(getArguments().getString("title"));
             tvLink.setText(getArguments().getString("link"));

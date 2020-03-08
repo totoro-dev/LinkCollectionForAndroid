@@ -18,8 +18,9 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import top.totoro.linkcollection.android.R;
-import top.totoro.linkcollection.android.adapter.BaseViewHolder;
+import top.totoro.linkcollection.android.adapter.CollectionAdapter;
 import top.totoro.linkcollection.android.adapter.LabelAdapter;
+import top.totoro.linkcollection.android.adapter.ServiceSearchAdapter;
 import top.totoro.linkcollection.android.fragment.MeFragment;
 import top.totoro.linkcollection.android.fragment.ServiceFragment;
 import top.totoro.linkcollection.android.util.FindView;
@@ -46,14 +47,19 @@ public class DeleteDialog extends DialogFragment implements View.OnClickListener
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (holder != null) {
-                if (holder.getClass().isAssignableFrom(BaseViewHolder.class)) {
-                    ((BaseViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collect40x40);
-                    ((BaseViewHolder) holder).collected = false;
-                } else if (holder.getClass().isAssignableFrom(LabelAdapter.MainViewHolder.class)) {
+                if (holder instanceof CollectionAdapter.ViewHolder) {
+                    ((CollectionAdapter.ViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collect40x40);
+                    ((CollectionAdapter.ViewHolder) holder).collected = false;
+                    Info.getCollectionInfo(); // 刷新已收藏的所有链接
+                    MeFragment.getInstance().refreshCollectData(Info.getCollectionInfos());
+                } else if (holder instanceof LabelAdapter.MainViewHolder) {
                     Logger.d("DeleteDialog", "delete at labels : " + tvLabels.getText());
                     ((LabelAdapter.MainViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collect40x40);
                     ((LabelAdapter.MainViewHolder) holder).collected = false;
                     MeFragment.getInstance().refreshLabelData();
+                } else if (holder instanceof ServiceSearchAdapter.ViewHolder) {
+                    ((ServiceSearchAdapter.ViewHolder) holder).ivCollect.setBackgroundResource(R.mipmap.collect40x40);
+                    ((ServiceSearchAdapter.ViewHolder) holder).collected = false;
                 }
             }
             Toast.makeText(context, R.string.delete_success, Toast.LENGTH_LONG).show();
@@ -114,10 +120,15 @@ public class DeleteDialog extends DialogFragment implements View.OnClickListener
             case R.id.tv_delete_confirm:
                 new Thread(() -> {
                     if (holder != null) {
-                        if (holder.getClass().isAssignableFrom(BaseViewHolder.class)) {
-                            Info.deleteCollection(((BaseViewHolder) holder).linkId);
-                        } else if (holder.getClass().isAssignableFrom(LabelAdapter.MainViewHolder.class)) {
+                        Logger.d(this, "start delete collection : view holder is assignable from " + holder.getClass().getSimpleName());
+                        if (holder instanceof CollectionAdapter.ViewHolder) {
+                            Logger.d(this, "delete collection linkId = " + ((CollectionAdapter.ViewHolder) holder).linkId);
+                            Info.deleteCollection(((CollectionAdapter.ViewHolder) holder).linkId);
+                        } else if (holder instanceof LabelAdapter.MainViewHolder) {
+                            Logger.d(this, "delete collection linkId = " + ((LabelAdapter.MainViewHolder) holder).linkId);
                             Info.deleteCollection(((LabelAdapter.MainViewHolder) holder).linkId);
+                        } else if (holder instanceof ServiceSearchAdapter.ViewHolder) {
+
                         }
                     }
                     handler.sendEmptyMessage(0);

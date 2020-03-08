@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import entry.CollectionInfo;
 import monitor.Background;
 import top.totoro.linkcollection.android.R;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.ui.CheckMailActivity;
 import top.totoro.linkcollection.android.ui.LoginActivity;
 import top.totoro.linkcollection.android.ui.ShowActivity;
@@ -37,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
+            LoadingDialog.getInstance().dismiss();
             switch (msg.what) {
                 case Constants.AUTO_LOGIN_FAILED:
                     startActivity(LoginActivity.class);
@@ -89,7 +91,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     String l1 = ls[0] == null || ls[0].equals("null") ? "" : ls[0];
                     String l2 = ls[1] == null || ls[1].equals("null") ? "" : ls[1];
                     String l3 = ls[2] == null || ls[2].equals("null") ? "" : ls[2];
-                    Logger.d(instance,"current system time = "+System.currentTimeMillis());
+                    Logger.d(instance, "current system time = " + System.currentTimeMillis());
                     BaseApplication.getInstance().notifyMe(title, link, l1, l2, l3, System.currentTimeMillis());
                     break;
                 case Constants.COLLECT_SUCCESS:

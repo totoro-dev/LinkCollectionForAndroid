@@ -17,6 +17,7 @@ import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.base.BaseActivity;
 import top.totoro.linkcollection.android.dialog.CollectDialog;
 import top.totoro.linkcollection.android.dialog.DeleteDialog;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.ui.WebActivity;
 import user.Info;
 
@@ -80,7 +81,7 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
         CollectDialog.newInstance(holder, title, link, l1, l2, l3).show(((BaseActivity) parent).getSupportFragmentManager(), "add");
     }
 
-    class ViewHolder extends BaseViewHolder {
+    public class ViewHolder extends BaseViewHolder {
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             setLayoutOnClickListener(v -> {

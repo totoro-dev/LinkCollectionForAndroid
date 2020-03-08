@@ -24,6 +24,7 @@ import entry.SearchInfo;
 import top.totoro.linkcollection.android.R;
 import top.totoro.linkcollection.android.adapter.ServiceSearchAdapter;
 import top.totoro.linkcollection.android.base.Constants;
+import top.totoro.linkcollection.android.dialog.LoadingDialog;
 import top.totoro.linkcollection.android.util.FindView;
 import top.totoro.linkcollection.android.util.Logger;
 import user.Info;
@@ -36,6 +37,7 @@ public class PushFragment extends Fragment implements View.OnClickListener {
     private static final ServiceSearchAdapter adapter = new ServiceSearchAdapter();
     private static final int ON_RESUME = -9;
     private static final int CHECK_LOVE_INFO = -10;
+    private static PushFragment instance;
     private Map<String, LinkedList<SearchInfo>> dataMap = new ConcurrentHashMap<>(10);
     private LinkedList<SearchInfo> data = new LinkedList<>();
     private List<TextView> titles = new LinkedList<>();
@@ -47,6 +49,7 @@ public class PushFragment extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
             switch (msg.what) {
                 case Constants.GET_PUSH_SUCCESS:
+                    LoadingDialog.getInstance().dismiss();
                     refreshData(data);
                     break;
                 case CHECK_LOVE_INFO:
@@ -61,7 +64,18 @@ public class PushFragment extends Fragment implements View.OnClickListener {
     private RecyclerView rvCollection;
     private FindView find;
 
-    private void refreshData(List<SearchInfo> data) {
+    public static PushFragment getInstance() {
+        if (instance == null) instance = new PushFragment();
+        return instance;
+    }
+
+    private void refreshData(LinkedList<SearchInfo> data) {
+        Logger.d(this, "refreshCollectData() : " + data.size());
+        this.data = data;
+        adapter.notifyDataSetChanged(data);
+    }
+
+    public void refreshData() {
         Logger.d(this, "refreshCollectData() : " + data.size());
         adapter.notifyDataSetChanged(data);
     }
@@ -195,6 +209,9 @@ public class PushFragment extends Fragment implements View.OnClickListener {
         titles.get(currentTitle).setTextSize(20);
         new Thread(() -> { // 开启线程获取数据
             if ((data = dataMap.get(type)) == null) {
+                if (getActivity() != null) {
+                    LoadingDialog.getInstance().show(getActivity().getSupportFragmentManager());
+                }
                 data = Info.getPushContent(type);
                 dataMap.put(type, data);
             }

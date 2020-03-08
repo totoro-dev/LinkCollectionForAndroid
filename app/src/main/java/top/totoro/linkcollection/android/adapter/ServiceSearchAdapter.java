@@ -46,7 +46,7 @@ public class ServiceSearchAdapter extends RecyclerView.Adapter<ServiceSearchAdap
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TIPS_VIEW_TYPE) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.no_choose_loves, parent, false));
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.never_choose_loves, parent, false));
         }
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false));
     }
@@ -106,7 +106,7 @@ public class ServiceSearchAdapter extends RecyclerView.Adapter<ServiceSearchAdap
         CollectDialog.newInstance(holder, title, link, l1, l2, l3).show(((BaseActivity) parent).getSupportFragmentManager(), "add");
     }
 
-    class ViewHolder extends BaseViewHolder {
+    public class ViewHolder extends BaseViewHolder {
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);

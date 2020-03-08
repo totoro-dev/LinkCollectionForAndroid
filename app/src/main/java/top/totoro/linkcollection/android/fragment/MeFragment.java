@@ -6,6 +6,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,9 +49,9 @@ public class MeFragment extends Fragment {
     public final CollectionAdapter collectAdapter = new CollectionAdapter();
     private final LabelAdapter labelAdapter = new LabelAdapter();
     public boolean showingLabels = false;
-    private Map<String, List<CollectionInfo>> itemMap = new LinkedHashMap<>();
     private SwipeRefreshLayout srlSwipe;
-
+    private TextView tvNeverCollect;
+    private Map<String, List<CollectionInfo>> itemMap = new LinkedHashMap<>();
     Handler handler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -81,11 +82,8 @@ public class MeFragment extends Fragment {
     private Runnable timeoutTask = () -> handler.sendEmptyMessage(REFRESH_TIMEOUT);
     private ScheduledFuture future;
 
-    public MeFragment() {
-        instance = this;
-    }
-
     public static MeFragment getInstance() {
+        if (instance == null) instance = new MeFragment();
         return instance;
     }
 
@@ -94,9 +92,11 @@ public class MeFragment extends Fragment {
         super.onStart();
         srlSwipe = find.View(SwipeRefreshLayout.class, R.id.show_collect_swipe);
         rvCollection = find.View(RecyclerView.class, R.id.show_collect_list);
+        tvNeverCollect = find.TextView(R.id.never_collect_tips);
         Logger.d(this, "onStart() RecyclerView is null ? " + (rvCollection == null));
         RecyclerView.LayoutManager manager = new LinearLayoutManager(this.getContext(), RecyclerView.VERTICAL, false);
         rvCollection.setLayoutManager(manager);
+        checkHasCollect();
         if (showingLabels) {
             showLabels();
         } else {
@@ -124,22 +124,32 @@ public class MeFragment extends Fragment {
     }
 
     public void showCollect() {
+        checkHasCollect();
         rvCollection.setAdapter(collectAdapter);
         showingLabels = false;
     }
 
     public void showLabels() {
+        checkHasCollect();
         refreshLabelData();
         showingLabels = true;
     }
 
+    /**
+     * 刷新所有收藏链接的列表
+     *
+     * @param data 新的数据
+     */
     public void refreshCollectData(List<CollectionInfo> data) {
-        collectAdapter.notifyDataSetChanged(data);
+        if (checkHasCollect()) {
+            collectAdapter.notifyDataSetChanged(data);
+        }
     }
 
     public void refreshLabelData() {
         LinkedList<String> labelList = new LinkedList<>();
         Info.getCollectionInfo();
+        checkHasCollect();
         if (Info.getCollectionInfos() == null || Info.getCollectionInfos().size() == 0) return;
         itemMap.clear();
         String labelJoin = "";
@@ -164,7 +174,23 @@ public class MeFragment extends Fragment {
         }
         labelAdapter.setItemMap(itemMap);
         labelAdapter.notifyDataSetChanged(labelList, itemMap.get(labelAdapter.selectLabelName));
-        rvCollection.setAdapter(labelAdapter);
+        if (showingLabels) {
+            rvCollection.setAdapter(labelAdapter);
+        }
+    }
+
+    /**
+     * 确定是否已有链接收藏，没有的话显示提示信息
+     *
+     * @return true，已有收藏的链接；false，暂无收藏的链接
+     */
+    private boolean checkHasCollect() {
+        if (Info.getCollectionCount() == 0) {
+            tvNeverCollect.setVisibility(View.VISIBLE);
+        } else {
+            tvNeverCollect.setVisibility(View.GONE);
+        }
+        return tvNeverCollect.getVisibility() == View.GONE;
     }
 
     @Override
